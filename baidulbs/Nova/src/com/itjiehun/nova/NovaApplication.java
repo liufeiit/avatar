@@ -6,6 +6,8 @@ import android.widget.Toast;
 
 public class NovaApplication extends Application {
 
+	private static NovaApplication application = null;
+
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
@@ -14,6 +16,7 @@ public class NovaApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		application = this;
 		Toast.makeText(this, "Application start..", Toast.LENGTH_LONG).show();
 	}
 }

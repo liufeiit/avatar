@@ -90,6 +90,6 @@ public class LocationListener implements BDLocationListener {
 //		mapView.getMap().setMyLocationEnabled(false);
 
 //		BaiduMapUtil.marker(mapView.getMap(), location.getLatitude(), location.getLongitude(), R.drawable.icon_175_220);
-		Toast.makeText(context, location.getLatitude() + ", " + location.getLongitude(), Toast.LENGTH_LONG).show();
+		Toast.makeText(context, "当前经纬度 (" + location.getLatitude() + ", " + location.getLongitude() + ")", Toast.LENGTH_LONG).show();
 	}
 }

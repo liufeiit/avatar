@@ -1,7 +1,7 @@
 package com.itjiehun.nova;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 
 import com.baidu.location.LocationClient;
@@ -10,7 +10,7 @@ import com.baidu.location.LocationClientOption.LocationMode;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.MapView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
 	private MapView mapView = null;
 	private LocationClient mLocationClient = null;
 
@@ -36,10 +36,14 @@ public class MainActivity extends Activity {
 		LocationListener listener = new LocationListener(mapView, this);
 		mLocationClient.registerLocationListener(listener); // 注册监听函数
 
+		// 返回国测局经纬度坐标系 coor=gcj02
+		// 返回国测局经纬度坐标系 coor=gcj02
+		// 返回百度经纬度坐标系 coor=bd09ll
 		LocationClientOption option = new LocationClientOption();
 		option.setLocationMode(LocationMode.Hight_Accuracy);// 设置定位模式
 		option.setCoorType("bd09ll");// 返回的定位结果是百度经纬度，默认值gcj02
 		option.setOpenGps(true);
+		option.setScanSpan(1001);
 		option.setIsNeedAddress(true);// 返回的定位结果包含地址信息
 		option.setNeedDeviceDirect(true);// 返回的定位结果包含手机机头的方向
 		mLocationClient.setLocOption(option);
