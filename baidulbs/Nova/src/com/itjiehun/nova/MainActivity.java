@@ -1,4 +1,4 @@
-package com.itjiehun.avatar;
+package com.itjiehun.nova;
 
 import android.app.Activity;
 import android.os.Bundle;
