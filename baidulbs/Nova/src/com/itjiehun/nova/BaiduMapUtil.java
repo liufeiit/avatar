@@ -48,7 +48,7 @@ public class BaiduMapUtil {
 
 		// 旋转角范围： -180 ~ 180 , 单位：度 逆时针旋转
 		// zoom - 缩放级别 [3, 19]
-		MapStatus ms = new MapStatus.Builder(baiduMap.getMapStatus()).rotate(100).target(point).zoom(19).build();
+		MapStatus ms = new MapStatus.Builder(baiduMap.getMapStatus()).rotate(90).target(point).zoom(19).build();
 		//accuracy - 精度信息，单位：米
 		MyLocationData locData = new MyLocationData.Builder().accuracy(location.getRadius())
 				.direction(location.getDirection()).latitude(location.getLatitude()).longitude(location.getLongitude()).speed(location.getSpeed())
