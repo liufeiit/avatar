@@ -5,11 +5,16 @@ import java.util.List;
 import android.content.Context;
 import android.widget.Button;
 
+import com.baidu.location.BDLocation;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.GroundOverlayOptions;
 import com.baidu.mapapi.map.InfoWindow;
+import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
+import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.InfoWindow.OnInfoWindowClickListener;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
@@ -35,11 +40,22 @@ public class BaiduMapUtil {
 	/**
 	 * 定义Maker坐标点
 	 */
-	public static void marker(BaiduMap baiduMap, double latitude, double longitude, int icon) {
-		LatLng point = new LatLng(latitude, longitude);
+	public static void marker(BaiduMap baiduMap, BDLocation location, int icon) {
+		LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
 		BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(icon);
 		OverlayOptions option = new MarkerOptions().position(point).icon(bitmap);
 		baiduMap.addOverlay(option);
+
+		// 旋转角范围： -180 ~ 180 , 单位：度 逆时针旋转
+		// zoom - 缩放级别 [3, 19]
+		MapStatus ms = new MapStatus.Builder(baiduMap.getMapStatus()).rotate(100).target(point).zoom(19).build();
+		//accuracy - 精度信息，单位：米
+		MyLocationData locData = new MyLocationData.Builder().accuracy(location.getRadius())
+				.direction(location.getDirection()).latitude(location.getLatitude()).longitude(location.getLongitude()).speed(location.getSpeed())
+				.build();
+		baiduMap.setMyLocationData(locData);
+		MapStatusUpdate u = MapStatusUpdateFactory.newMapStatus(ms);
+		baiduMap.animateMapStatus(u);
 	}
 
 	/**
@@ -58,6 +74,7 @@ public class BaiduMapUtil {
 			public void onGetPoiResult(PoiResult result) {
 				// 获取POI检索结果
 			}
+
 			public void onGetPoiDetailResult(PoiDetailResult result) {
 				// 获取Place详情页检索结果
 			}
@@ -79,7 +96,7 @@ public class BaiduMapUtil {
 
 		// 创建InfoWindow展示的view
 		Button button = new Button(context);
-		button.setBackgroundResource(R.drawable.icon_175_220);
+		button.setBackgroundResource(R.drawable.icon_geo);
 		// 定义用于显示该InfoWindow的坐标点
 		LatLng pt = new LatLng(39.86923, 116.397428);
 		// 创建InfoWindow的点击事件监听者
@@ -102,7 +119,7 @@ public class BaiduMapUtil {
 		LatLng northeast = new LatLng(39.947246, 116.414977);
 		LatLngBounds bounds = new LatLngBounds.Builder().include(northeast).include(southwest).build();
 		// 定义Ground显示的图片
-		BitmapDescriptor bdGround = BitmapDescriptorFactory.fromResource(R.drawable.icon_175_220);
+		BitmapDescriptor bdGround = BitmapDescriptorFactory.fromResource(R.drawable.icon_geo);
 		// 定义Ground覆盖物选项
 		OverlayOptions ooGround = new GroundOverlayOptions().positionFromBounds(bounds).image(bdGround)
 				.transparency(0.8f);

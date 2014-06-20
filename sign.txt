@@ -1,0 +1,9 @@
+
+证书签名
+
+keytool -genkey -alias android.keystore -keyalg RSA -validity 200000 -keystore android.keystore
+
+
+查看证书指纹
+
+keytool -list -v -keystore android.keystore

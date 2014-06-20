@@ -17,6 +17,10 @@ public class NovaApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		application = this;
-		Toast.makeText(this, "Application start..", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, "welcome to Nova Application!", Toast.LENGTH_SHORT).show();
+	}
+
+	public static NovaApplication getApplication() {
+		return application;
 	}
 }
