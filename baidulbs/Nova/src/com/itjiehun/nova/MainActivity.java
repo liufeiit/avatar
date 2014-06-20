@@ -7,8 +7,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
@@ -55,6 +60,33 @@ public class MainActivity extends Activity {
 		mapView.getMap().setMapStatus(msu);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(mapView);
+		
+		
+		
+		
+		LinearLayout bottomBar = new LinearLayout(this);
+//		RelativeLayout bottomBar = new RelativeLayout(this);
+		bottomBar.setGravity(Gravity.RIGHT);
+//		bottomBar.setOrientation(LinearLayout.VERTICAL);
+//		bottomBar.setGravity(Gravity.BOTTOM);
+//		bottomBar.setGravity(Gravity.TOP);
+		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+				ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		Button child1 = new Button(this);
+		child1.setText("导航");
+		Button child2 = new Button(this);
+		child2.setText("附近");
+		bottomBar.addView(child1, 0, new RelativeLayout.LayoutParams(
+				ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+		bottomBar.addView(child2, 1, new RelativeLayout.LayoutParams(
+				ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+		
+		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+		addContentView(bottomBar, layoutParams);
+		
+		
+		
+		
 		mapView.getMap().setOnMapClickListener(new OnMapClickListener() {
 			@Override
 			public boolean onMapPoiClick(MapPoi mapPoi) {
@@ -155,26 +187,26 @@ public class MainActivity extends Activity {
 
 		if (locationClient.isStarted()) {
 			// locationClient.requestLocation();
-			// locationClient.requestOfflineLocation();
+			 locationClient.requestOfflineLocation();
 
 			notifyLister = new NotifyLister();
 			// 4个参数代表要位置提醒的点的坐标，具体含义依次为：纬度，经度，距离范围，坐标系类型(gcj02,gps,bd09,bd09ll)
 			notifyLister.SetNotifyLocation(31d, 121d, 3000, "gps");
 			locationClient.registerNotify(notifyLister);
 
-			locationClient.requestNotifyLocation();
+//			locationClient.requestNotifyLocation();
 
 		} else {
 			locationClient.start();
 
-			// locationClient.requestOfflineLocation();
+			 locationClient.requestOfflineLocation();
 
 			notifyLister = new NotifyLister();
 			// 4个参数代表要位置提醒的点的坐标，具体含义依次为：纬度，经度，距离范围，坐标系类型(gcj02,gps,bd09,bd09ll)
 			notifyLister.SetNotifyLocation(31d, 121d, 30000000, "gps");
 			locationClient.registerNotify(notifyLister);
 
-			locationClient.requestNotifyLocation();
+//			locationClient.requestNotifyLocation();
 		}
 
 		IntentFilter filter = new IntentFilter();

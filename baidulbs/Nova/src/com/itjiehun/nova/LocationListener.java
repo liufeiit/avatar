@@ -82,7 +82,7 @@ public class LocationListener implements BDLocationListener {
 //						Toast.makeText(context, sb.toString(), Toast.LENGTH_LONG).show();
 						
 						Intent intent = null;
-						intent = new Intent(context, LayersMap.class);
+						intent = new Intent(context, OfflineMap.class);
 						context.startActivity(intent);
 //						TipHelper.vibrate((Activity) context, new long[]{1000L, 2000L, 1000L, 2000L, 1000L, 2000L, 1000L, 2000L, 1000L, 2000L}, true);
 						
