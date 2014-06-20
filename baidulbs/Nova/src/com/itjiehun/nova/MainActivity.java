@@ -18,11 +18,20 @@ import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BaiduMap.OnMapClickListener;
+import com.baidu.mapapi.map.BaiduMap.OnMapDoubleClickListener;
+import com.baidu.mapapi.map.BaiduMap.OnMapLoadedCallback;
+import com.baidu.mapapi.map.BaiduMap.OnMapLongClickListener;
+import com.baidu.mapapi.map.BaiduMap.OnMapStatusChangeListener;
+import com.baidu.mapapi.map.BaiduMap.OnMarkerClickListener;
+import com.baidu.mapapi.map.BaiduMap.OnMyLocationClickListener;
 import com.baidu.mapapi.map.BaiduMapOptions;
+import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.model.LatLng;
 
 public class MainActivity extends Activity {
@@ -46,6 +55,89 @@ public class MainActivity extends Activity {
 		mapView.getMap().setMapStatus(msu);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(mapView);
+		mapView.getMap().setOnMapClickListener(new OnMapClickListener() {
+			@Override
+			public boolean onMapPoiClick(MapPoi mapPoi) {
+				return true;
+			}
+
+			@Override
+			public void onMapClick(LatLng latLng) {
+				Toast.makeText(MainActivity.this, "Click : (" + latLng.latitude + ", " + latLng.longitude + ")",
+						Toast.LENGTH_LONG).show();
+			}
+		});
+		mapView.getMap().setOnMapDoubleClickListener(new OnMapDoubleClickListener() {
+
+			@Override
+			public void onMapDoubleClick(LatLng latLng) {
+				Toast.makeText(MainActivity.this, "DoubleClick : (" + latLng.latitude + ", " + latLng.longitude + ")",
+						Toast.LENGTH_LONG).show();
+			}
+		});
+		mapView.getMap().setOnMapLoadedCallback(new OnMapLoadedCallback() {
+			@Override
+			public void onMapLoaded() {
+				Toast.makeText(MainActivity.this, "地图加载完毕!", Toast.LENGTH_LONG).show();
+			}
+		});
+		mapView.getMap().setOnMapLongClickListener(new OnMapLongClickListener() {
+
+			@Override
+			public void onMapLongClick(LatLng latLng) {
+				Toast.makeText(MainActivity.this, "LongClick : (" + latLng.latitude + ", " + latLng.longitude + ")",
+						Toast.LENGTH_LONG).show();
+			}
+		});
+		mapView.getMap().setOnMapStatusChangeListener(new OnMapStatusChangeListener() {
+
+			@Override
+			public void onMapStatusChangeStart(MapStatus mapStatus) {
+				/*Toast.makeText(
+						MainActivity.this,
+						"onMapStatusChangeStart : (" + mapStatus.overlook + ", " + mapStatus.rotate + ", "
+								+ mapStatus.target + ", " + mapStatus.targetScreen + ", " + mapStatus.zoom + ")",
+						Toast.LENGTH_LONG).show();*/
+			}
+
+			@Override
+			public void onMapStatusChangeFinish(MapStatus mapStatus) {
+				/*Toast.makeText(
+						MainActivity.this,
+						"onMapStatusChangeFinish : (" + mapStatus.overlook + ", " + mapStatus.rotate + ", "
+								+ mapStatus.target + ", " + mapStatus.targetScreen + ", " + mapStatus.zoom + ")",
+						Toast.LENGTH_LONG).show();*/
+			}
+
+			@Override
+			public void onMapStatusChange(MapStatus mapStatus) {
+				/*Toast.makeText(
+						MainActivity.this,
+						"onMapStatusChange : (" + mapStatus.overlook + ", " + mapStatus.rotate + ", "
+								+ mapStatus.target + ", " + mapStatus.targetScreen + ", " + mapStatus.zoom + ")",
+						Toast.LENGTH_LONG).show();*/
+			}
+		});
+		mapView.getMap().setOnMarkerClickListener(new OnMarkerClickListener() {
+			@Override
+			public boolean onMarkerClick(Marker marker) {
+				Toast.makeText(
+						MainActivity.this,
+						"onMarkerClick : (" + marker.getPosition().latitude + ", " + marker.getPosition().latitude
+								+ ")", Toast.LENGTH_LONG).show();
+				return true;
+			}
+		});
+		mapView.getMap().setOnMyLocationClickListener(new OnMyLocationClickListener() {
+			@Override
+			public boolean onMyLocationClick() {
+				Toast.makeText(
+						MainActivity.this,
+						"onMyLocationClick", Toast.LENGTH_LONG).show();
+				return true;
+			}
+		});
+		mapView.getMap().setBuildingsEnabled(true);
 		mapView.getMap().setMyLocationEnabled(true);
 		mapView.getMap().setTrafficEnabled(true);
 		locationClient = new LocationClient(getApplicationContext());
@@ -60,31 +152,31 @@ public class MainActivity extends Activity {
 		option.setIsNeedAddress(true);
 		option.setNeedDeviceDirect(true);
 		locationClient.setLocOption(option);
-		
-		if(locationClient.isStarted()) {
-//			locationClient.requestLocation();
-//			locationClient.requestOfflineLocation();
-			
+
+		if (locationClient.isStarted()) {
+			// locationClient.requestLocation();
+			// locationClient.requestOfflineLocation();
+
 			notifyLister = new NotifyLister();
-			//4个参数代表要位置提醒的点的坐标，具体含义依次为：纬度，经度，距离范围，坐标系类型(gcj02,gps,bd09,bd09ll)
-			notifyLister.SetNotifyLocation(31d, 121d , 3000, "gps");
+			// 4个参数代表要位置提醒的点的坐标，具体含义依次为：纬度，经度，距离范围，坐标系类型(gcj02,gps,bd09,bd09ll)
+			notifyLister.SetNotifyLocation(31d, 121d, 3000, "gps");
 			locationClient.registerNotify(notifyLister);
 
 			locationClient.requestNotifyLocation();
-			
+
 		} else {
 			locationClient.start();
-//			locationClient.requestOfflineLocation();
-			
+
+			// locationClient.requestOfflineLocation();
+
 			notifyLister = new NotifyLister();
-			//4个参数代表要位置提醒的点的坐标，具体含义依次为：纬度，经度，距离范围，坐标系类型(gcj02,gps,bd09,bd09ll)
+			// 4个参数代表要位置提醒的点的坐标，具体含义依次为：纬度，经度，距离范围，坐标系类型(gcj02,gps,bd09,bd09ll)
 			notifyLister.SetNotifyLocation(31d, 121d, 30000000, "gps");
 			locationClient.registerNotify(notifyLister);
 
 			locationClient.requestNotifyLocation();
 		}
-		
-		
+
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR);
 		filter.addAction(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR);
@@ -92,11 +184,11 @@ public class MainActivity extends Activity {
 		baiduMapSDKReceiver = new BaiduMapSDKReceiver();
 		registerReceiver(baiduMapSDKReceiver, filter);
 	}
-	
-	public class NotifyLister extends BDNotifyListener{
-	    public void onNotify(BDLocation mlocation, float distance){
-	    	TipHelper.vibrate(MainActivity.this, new long[]{1000L, 2000L, 1000L, 2000L, 1000L, 2000L, 1000L, 2000L, 1000L, 2000L}, true);
-	    }
+
+	public class NotifyLister extends BDNotifyListener {
+		public void onNotify(BDLocation location, float distance) {
+			TipHelper.vibrate(MainActivity.this, 2000);
+		}
 	}
 
 	@Override

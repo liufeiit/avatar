@@ -78,12 +78,14 @@ public class LocationListener implements BDLocationListener {
 							sb.append("\naddr : ");
 							sb.append(location.getAddrStr());
 						}
+						
 //						Toast.makeText(context, sb.toString(), Toast.LENGTH_LONG).show();
 						
 						Intent intent = null;
 						intent = new Intent(context, LayersMap.class);
 						context.startActivity(intent);
-						TipHelper.vibrate((Activity) context, new long[]{1000L, 2000L, 1000L, 2000L, 1000L, 2000L, 1000L, 2000L, 1000L, 2000L}, true);
+//						TipHelper.vibrate((Activity) context, new long[]{1000L, 2000L, 1000L, 2000L, 1000L, 2000L, 1000L, 2000L, 1000L, 2000L}, true);
+						
 					}
 				};
 				mInfoWindow = new InfoWindow(button, llInfo, listener);
