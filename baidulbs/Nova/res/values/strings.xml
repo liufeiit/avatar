@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">Avatar</string>
-    <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
-
+    <string name="app_name">阿凡达</string>
+    <string name="action_settings">设置</string>
+    <string name="offline_act">离线地图</string>
+    <string name="geo_coder">地理编码</string>
+    <string name="navi_tip">百度地图SDK支持通过相关的接口，调启百度地图客户端（v5.0以上）导航和Web端百度地图导航。</string>
 </resources>

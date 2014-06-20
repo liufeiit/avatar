@@ -34,6 +34,8 @@
     <!-- 允许应用读取低级别的系统日志文件 -->
     <uses-permission android:name="android.permission.READ_LOGS" />
     <uses-permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
+    <!-- 震动 -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:name="com.itjiehun.nova.NovaApplication"
@@ -49,7 +51,101 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.OfflineMap"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/offline_act"
+            android:screenOrientation="sensor">
+        </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.GeoCoderMap"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder"
+            android:screenOrientation="sensor">
+        </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.RoutePlanMap"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder"
+            android:screenOrientation="sensor">
+        </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.BusLineSearchMap"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder"
+            android:screenOrientation="sensor">
+        </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.PoiShareMap"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.CloudSearchMap"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.Navigator"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.FragmentMap"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.MultiMapView"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.MapController"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.GeometryMap"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.OverlayMap"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
+        
+        <activity
+            android:name="com.itjiehun.nova.PoiSearchMap"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
 
+        <activity
+            android:name="com.itjiehun.nova.LayersMap"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
+
+        <activity
+            android:name="com.itjiehun.nova.UISettingMap"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
+        
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"

@@ -42,18 +42,24 @@ public class BaiduMapUtil {
 	 */
 	public static void marker(BaiduMap baiduMap, BDLocation location, int icon) {
 		LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
+
+		/*OverlayOptions ooText = new TextOptions().bgColor(0xAAFFFF00).fontSize(24).fontColor(0xFFFF00FF)
+				.text("me hear").rotate(-30).position(point);
+		baiduMap.addOverlay(ooText);*/
+
 		BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(icon);
 		OverlayOptions option = new MarkerOptions().position(point).icon(bitmap);
 		baiduMap.addOverlay(option);
-
 		// 旋转角范围： -180 ~ 180 , 单位：度 逆时针旋转
-		// zoom - 缩放级别 [3, 19]
+		// zoom - 缩放级别 [3.0, 19.0]
 		MapStatus ms = new MapStatus.Builder(baiduMap.getMapStatus()).rotate(90).target(point).zoom(19).build();
-		//accuracy - 精度信息，单位：米
-		MyLocationData locData = new MyLocationData.Builder().accuracy(location.getRadius())
-				.direction(location.getDirection()).latitude(location.getLatitude()).longitude(location.getLongitude()).speed(location.getSpeed())
-				.build();
-		baiduMap.setMyLocationData(locData);
+		
+		// accuracy - 精度信息，单位：米
+		/*MyLocationData locData = new MyLocationData.Builder().accuracy(location.getRadius())
+				.direction(location.getDirection()).latitude(location.getLatitude()).longitude(location.getLongitude())
+				.speed(location.getSpeed()).build();
+		baiduMap.setMyLocationData(locData);*/
+		
 		MapStatusUpdate u = MapStatusUpdateFactory.newMapStatus(ms);
 		baiduMap.animateMapStatus(u);
 	}
