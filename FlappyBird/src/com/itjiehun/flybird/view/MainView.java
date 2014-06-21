@@ -154,7 +154,6 @@ public class MainView extends BaseView {
 				fileManager.fileWriter(String.valueOf(score));
 			}
 		}
-
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -168,7 +167,6 @@ public class MainView extends BaseView {
 				// ingore
 			}
 		}
-
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {

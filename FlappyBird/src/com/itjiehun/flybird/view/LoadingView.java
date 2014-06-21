@@ -102,7 +102,7 @@ public class LoadingView extends BaseView {
 			canvas.drawBitmap(logoImg, logoImgX, logoImgY, paint);
 			canvas.drawText(author, textX, textY, paint);
 		} catch (Exception err) {
-			err.printStackTrace();
+			// ignore
 		} finally {
 			if (canvas != null) {
 				sfh.unlockCanvasAndPost(canvas);
@@ -128,5 +128,4 @@ public class LoadingView extends BaseView {
 			this.textImg.recycle();
 		}
 	}
-
 }
