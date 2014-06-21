@@ -4,4 +4,4 @@
  * @version 1.0
  * @since 2014-6-21 下午4:41:50
  */
-package com.itjiehun.nova.SuperCube;
+package com.itjiehun.nova.cube;

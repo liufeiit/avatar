@@ -234,7 +234,6 @@ public class MainActivity extends Activity {
 
 			// locationClient.requestNotifyLocation();
 		}
-
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR);
 		filter.addAction(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR);
@@ -245,7 +244,7 @@ public class MainActivity extends Activity {
 
 	public class NotifyLister extends BDNotifyListener {
 		public void onNotify(BDLocation location, float distance) {
-			TipHelper.vibrate(MainActivity.this, 2000);
+//			TipHelper.vibrate(MainActivity.this, 2000);
 		}
 	}
 

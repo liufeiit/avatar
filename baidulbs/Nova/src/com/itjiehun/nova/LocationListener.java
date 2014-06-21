@@ -1,6 +1,5 @@
 package com.itjiehun.nova;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
@@ -14,6 +13,7 @@ import com.baidu.mapapi.map.InfoWindow.OnInfoWindowClickListener;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.model.LatLng;
+import com.itjiehun.nova.cube.OpenGL;
 
 /**
  * 
@@ -78,14 +78,11 @@ public class LocationListener implements BDLocationListener {
 							sb.append("\naddr : ");
 							sb.append(location.getAddrStr());
 						}
-						
 //						Toast.makeText(context, sb.toString(), Toast.LENGTH_LONG).show();
-						
 						Intent intent = null;
-						intent = new Intent(context, OfflineMap.class);
+						intent = new Intent(context, OpenGL.class);
 						context.startActivity(intent);
 //						TipHelper.vibrate((Activity) context, new long[]{1000L, 2000L, 1000L, 2000L, 1000L, 2000L, 1000L, 2000L, 1000L, 2000L}, true);
-						
 					}
 				};
 				mInfoWindow = new InfoWindow(button, llInfo, listener);

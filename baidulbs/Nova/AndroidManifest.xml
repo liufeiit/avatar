@@ -146,6 +146,12 @@
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/geo_coder">
         </activity>
+
+        <activity
+            android:name="com.itjiehun.nova.cube.OpenGL"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
         
         <service
             android:name="com.baidu.location.f"
