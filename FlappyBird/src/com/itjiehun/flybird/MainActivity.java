@@ -6,9 +6,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import cn.waps.AppConnect;
@@ -28,6 +32,8 @@ public class MainActivity extends Activity {
 	private LoadingView loadingView;// 游戏载入窗口
 	private MainView mainView;// 游戏主窗口
 	private SoundPlayer soundPlayer;// 音乐播放器
+	
+	public boolean voice = true;
 
 	private Handler handler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -87,6 +93,39 @@ public class MainActivity extends Activity {
 				MobclickAgent.reportError(BirdApplication.getApplication(), e);
 			}
 		}
+		
+		RelativeLayout actionBar = new RelativeLayout(this);
+		actionBar.setGravity(Gravity.RIGHT);
+		RelativeLayout.LayoutParams barLayout = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT);
+		RelativeLayout.LayoutParams voiceLayout = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT);
+		final ImageButton voice = new ImageButton(this);
+		voice.setImageResource(R.drawable.voice);
+		voice.setScaleType(ScaleType.CENTER_INSIDE);
+		voice.setBackgroundColor(0XB2B2C5);
+		// 0~255透明度值
+		voice.setAlpha(180);
+		voiceLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+		actionBar.addView(voice, 0, voiceLayout);
+		barLayout.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+		barLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+		addContentView(actionBar, barLayout);
+		voice.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(MainActivity.this.voice) {
+					MainActivity.this.voice = false;
+				} else {
+					MainActivity.this.voice = true;
+				}
+				if(!MainActivity.this.voice) {
+					voice.setImageResource(R.drawable.voice_close);
+				} else {
+					voice.setImageResource(R.drawable.voice);
+				}
+			}
+		});
 	}
 
 	public void endGame() {
