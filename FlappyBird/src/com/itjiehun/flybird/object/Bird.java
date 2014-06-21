@@ -66,13 +66,6 @@ public class Bird extends GameObject {
 
 		this.obj_mid_y = this.obj_y + this.obj_height / 2;
 
-		// obj_rect.left = (int) obj_x;
-		// obj_rect.top = (int) obj_y;
-		// obj_rect.right = (int) (obj_x + obj_height + (obj_width - obj_height)
-		// * (1 - Math.cos(angle)));
-		// obj_rect.bottom = (int) Math.floor (obj_y + obj_width -
-		// Math.abs((obj_width - obj_height) * Math.sin(angle)));
-
 		obj_rect.left = (int) (obj_x + (obj_width - obj_height) / 2);
 		obj_rect.top = (int) (obj_y + (obj_width - obj_height) / 2);
 		obj_rect.right = (int) (obj_rect.left + obj_height);
@@ -89,10 +82,6 @@ public class Bird extends GameObject {
 		canvas.rotate(-angle, obj_mid_x, obj_mid_y);
 		canvas.drawBitmap(birdImg, obj_x, obj_y, paint);
 		canvas.restore();
-		/*
-		 * paint.setColor(Color.BLACK); paint.setAlpha(50);
-		 * canvas.drawRect(obj_rect, paint);
-		 */
 	}
 
 	public boolean pass(Column column) {
@@ -110,11 +99,6 @@ public class Bird extends GameObject {
 	}
 
 	public boolean hitGround(Ground ground) {
-		/*
-		 * if(this.obj_rect.intersect(ground.getObjRect())) { return true; }
-		 * return false;
-		 */
-
 		if ((this.obj_rect.bottom + 1) >= ground.getObjRect().top) {
 			return true;
 		}
@@ -152,5 +136,4 @@ public class Bird extends GameObject {
 	public Rect getObjRect() {
 		return this.obj_rect;
 	}
-
 }

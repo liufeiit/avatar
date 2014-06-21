@@ -8,6 +8,9 @@ import java.io.IOException;
 
 import org.apache.http.util.EncodingUtils;
 
+import com.itjiehun.flybird.BirdApplication;
+import com.umeng.analytics.MobclickAgent;
+
 import android.os.Environment;
 
 public class FileManager {
@@ -26,9 +29,9 @@ public class FileManager {
 			score = EncodingUtils.getString(buffer, "UTF-8");
 			fin.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			MobclickAgent.reportError(BirdApplication.getApplication(), e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			MobclickAgent.reportError(BirdApplication.getApplication(), e);
 		}
 		return score;
 	}
@@ -40,9 +43,9 @@ public class FileManager {
 			fout.write(buffer);
 			fout.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			MobclickAgent.reportError(BirdApplication.getApplication(), e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			MobclickAgent.reportError(BirdApplication.getApplication(), e);
 		}
 	}
 
@@ -59,7 +62,7 @@ public class FileManager {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				e.printStackTrace();
+				MobclickAgent.reportError(BirdApplication.getApplication(), e);
 			}
 		}
 	}

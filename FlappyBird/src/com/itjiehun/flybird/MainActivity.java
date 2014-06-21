@@ -62,6 +62,7 @@ public class MainActivity extends Activity {
 		MobclickAgent.updateOnlineConfig(this);
 		UmengUpdateAgent.setUpdateCheckConfig(true);
 		UmengUpdateAgent.setUpdateAutoPopup(true);
+		
 	}
 
 	public void toMainView() {
@@ -75,13 +76,17 @@ public class MainActivity extends Activity {
 		this.loadingView = null;
 		String ads = MobclickAgent.getConfigParams(this, UmengStatic.AdsKey.def);
 		if ("1".equals(ads) || "on".equalsIgnoreCase(ads) || "true".equalsIgnoreCase(ads)) {
-			LinearLayout adlayout = new LinearLayout(this);
-			adlayout.setGravity(Gravity.BOTTOM);
-			RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-					ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
-			AppConnect.getInstance(this).showBannerAd(this, adlayout);
-			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-			addContentView(adlayout, layoutParams);
+			try {
+				LinearLayout adlayout = new LinearLayout(this);
+				adlayout.setGravity(Gravity.BOTTOM);
+				RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+						ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+				AppConnect.getInstance(this).showBannerAd(this, adlayout);
+				layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+				addContentView(adlayout, layoutParams);
+			} catch (Exception e) {
+				MobclickAgent.reportError(BirdApplication.getApplication(), e);
+			}
 		}
 	}
 

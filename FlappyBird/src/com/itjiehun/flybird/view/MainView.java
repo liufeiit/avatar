@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
 
+import com.itjiehun.flybird.BirdApplication;
 import com.itjiehun.flybird.R;
 import com.itjiehun.flybird.config.Config;
 import com.itjiehun.flybird.config.Constants;
@@ -20,6 +21,7 @@ import com.itjiehun.flybird.object.Column;
 import com.itjiehun.flybird.object.Ground;
 import com.itjiehun.flybird.util.FileManager;
 import com.itjiehun.flybird.util.SoundPlayer;
+import com.umeng.analytics.MobclickAgent;
 
 @SuppressLint("ViewConstructor")
 public class MainView extends BaseView {
@@ -73,8 +75,6 @@ public class MainView extends BaseView {
 	private int score;
 	private int bestScore;
 
-	// private Rect rect;
-
 	public MainView(Context context, SoundPlayer soundPlayer) {
 		super(context, soundPlayer);
 		isStart = false;
@@ -82,11 +82,6 @@ public class MainView extends BaseView {
 		isOver = false;
 		isPause = false;
 		isWrite = false;
-		// rect = new Rect();
-
-		// Toast.makeText(this.mainActivity.getApplicationContext(),
-		// Constants.SCREEN_WIDTH + " " + Constants.SCREEN_HEIGHT,
-		// Toast.LENGTH_LONG).show();
 
 		fileManager = new FileManager();
 		if (fileManager.sdIsAvalible()) {
@@ -97,9 +92,7 @@ public class MainView extends BaseView {
 				bestScore = Integer.parseInt(fileManager.fileReader());
 			}
 		} else {
-			// Looper.prepare();
 			Toast.makeText(this.mainActivity.getApplicationContext(), "SD卡不可用，将无法保存您的最高纪录", Toast.LENGTH_LONG).show();
-			// Looper.loop();
 		}
 		ground = new Ground(getResources());
 		column1 = new Column(getResources(), Config.COLUMN_X_GAP * 2, ground.getObjHeight());
@@ -132,31 +125,29 @@ public class MainView extends BaseView {
 					try {
 						thread.wait();
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						// ingore
 					}
 				}
 			}
 			try {
 				Thread.sleep(1000 / 60);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				// ingore
 			}
 		}
 
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			// ingore
 		}
 		drawSelf();
-
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			// ingore
 		}
 		drawNotice();
-
 		if (fileManager.sdIsAvalible()) {
 			if (score > bestScore) {
 				fileManager.fileWriter(String.valueOf(score));
@@ -166,30 +157,29 @@ public class MainView extends BaseView {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			// ingore
 		}
 		for (int i = 0; i <= score; i++) {
 			drawResult(i);
 			try {
 				Thread.sleep(1000 / 60);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				// ingore
 			}
 		}
 
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			// ingore
 		}
 		synchronized (thread) {
 			drawMedal();
 		}
-
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			// ingore
 		}
 		drawButton();
 		isWrite = true;
@@ -199,9 +189,7 @@ public class MainView extends BaseView {
 	public void drawSelf() {
 		try {
 			canvas = sfh.lockCanvas();
-
 			drawObject();
-
 			if (!isHit) {
 				if (bird.pass(column1) || bird.pass(column2) || bird.pass(column3)) {
 					soundPlayer.playSound(2, 0);
@@ -215,18 +203,9 @@ public class MainView extends BaseView {
 					isHit = true;
 				}
 			}
-
-			/*
-			 * paint.setTextSize(26); paint.setColor(Color.WHITE);
-			 * paint.getTextBounds(String.valueOf(score), 0,
-			 * String.valueOf(score).length(), rect);
-			 * canvas.drawText(String.valueOf(score), 10, rect.height() + 5,
-			 * paint);
-			 */
 			if (!isOver) {
 				drawScore(bigNumbersImg, bigNumbersImgX, bigNumbersImgY, score);
 			}
-
 			if (isOver) {
 				soundPlayer.playSound(5, 0);
 				canvas.drawBitmap(endImg, endImgX, endImgY, paint);
@@ -258,8 +237,8 @@ public class MainView extends BaseView {
 					canvas.restore();
 				}
 			}
-		} catch (Exception err) {
-			err.printStackTrace();
+		} catch (Exception e) {
+			MobclickAgent.reportError(BirdApplication.getApplication(), e);
 		} finally {
 			if (canvas != null) {
 				sfh.unlockCanvasAndPost(canvas);
@@ -270,15 +249,12 @@ public class MainView extends BaseView {
 	public void drawNotice() {
 		try {
 			canvas = sfh.lockCanvas();
-
 			drawObject();
-
 			soundPlayer.playSound(5, 0);
 			canvas.drawBitmap(endImg, endImgX, endImgY, paint);
-
 			canvas.drawBitmap(noticeImg, noticeImgX, noticeImgY, paint);
-		} catch (Exception err) {
-			err.printStackTrace();
+		} catch (Exception e) {
+			MobclickAgent.reportError(BirdApplication.getApplication(), e);
 		} finally {
 			if (canvas != null) {
 				sfh.unlockCanvasAndPost(canvas);
@@ -289,30 +265,12 @@ public class MainView extends BaseView {
 	public void drawResult(int i) {
 		try {
 			canvas = sfh.lockCanvas();
-
 			drawObject();
-
-			// soundPlayer.playSound(5, 0);
 			canvas.drawBitmap(endImg, endImgX, endImgY, paint);
-
 			canvas.drawBitmap(noticeImg, noticeImgX, noticeImgY, paint);
-
-			/*
-			 * paint.setTextSize(26); paint.setColor(Color.WHITE);
-			 * paint.getTextBounds(String.valueOf(bestScore), 0,
-			 * String.valueOf(bestScore).length(), rect);
-			 * canvas.drawText(String.valueOf(bestScore), noticeImgX +
-			 * noticeImg.getWidth() - rect.width(), noticeImgY +
-			 * noticeImg.getHeight() - rect.height(), paint);
-			 */
-
 			drawScore(smallNumbersImg, smallScoreX, smallScoreY, i);
-
-			// drawScore(smallNumbersImg, smallNumbersImgX, smallNumbersImgY,
-			// bestScore);
-
-		} catch (Exception err) {
-			err.printStackTrace();
+		} catch (Exception e) {
+			MobclickAgent.reportError(BirdApplication.getApplication(), e);
 		} finally {
 			if (canvas != null) {
 				sfh.unlockCanvasAndPost(canvas);
@@ -323,30 +281,15 @@ public class MainView extends BaseView {
 	public void drawMedal() {
 		try {
 			canvas = sfh.lockCanvas();
-
 			drawObject();
-
 			soundPlayer.playSound(5, 0);
 			canvas.drawBitmap(endImg, endImgX, endImgY, paint);
-
 			canvas.drawBitmap(noticeImg, noticeImgX, noticeImgY, paint);
-
-			/*
-			 * paint.setTextSize(26); paint.setColor(Color.WHITE);
-			 * paint.getTextBounds(String.valueOf(bestScore), 0,
-			 * String.valueOf(bestScore).length(), rect);
-			 * canvas.drawText(String.valueOf(bestScore), noticeImgX +
-			 * noticeImg.getWidth() - rect.width(), noticeImgY +
-			 * noticeImg.getHeight() - rect.height(), paint);
-			 */
-
 			drawScore(smallNumbersImg, smallScoreX, smallScoreY, score);
-
 			drawScore(smallNumbersImg, smallNumbersImgX, smallNumbersImgY, bestScore);
-
 			drawMedalImg();
-		} catch (Exception err) {
-			err.printStackTrace();
+		} catch (Exception e) {
+			MobclickAgent.reportError(BirdApplication.getApplication(), e);
 		} finally {
 			if (canvas != null) {
 				sfh.unlockCanvasAndPost(canvas);
@@ -357,24 +300,17 @@ public class MainView extends BaseView {
 	public void drawButton() {
 		try {
 			canvas = sfh.lockCanvas();
-
 			drawObject();
-
 			soundPlayer.playSound(5, 0);
 			canvas.drawBitmap(endImg, endImgX, endImgY, paint);
-
 			canvas.drawBitmap(noticeImg, noticeImgX, noticeImgY, paint);
-
 			drawScore(smallNumbersImg, smallScoreX, smallScoreY, score);
-
 			drawScore(smallNumbersImg, smallNumbersImgX, smallNumbersImgY, bestScore);
-
 			drawMedalImg();
-
 			canvas.drawBitmap(restartButtonImg, restartButtonImgX, restartButtonImgY, paint);
 			canvas.drawBitmap(exitButtonImg, exitButtonImgX, exitButtonImgY, paint);
-		} catch (Exception err) {
-			err.printStackTrace();
+		} catch (Exception e) {
+			MobclickAgent.reportError(BirdApplication.getApplication(), e);
 		} finally {
 			if (canvas != null) {
 				sfh.unlockCanvasAndPost(canvas);
@@ -409,7 +345,6 @@ public class MainView extends BaseView {
 		List<Integer> list = new ArrayList<Integer>();
 		int scoreCopy = num;
 		int quotient = 0;
-
 		while ((quotient = scoreCopy / 10) != 0) {
 			list.add(scoreCopy % 10);
 			scoreCopy = quotient;
@@ -520,7 +455,6 @@ public class MainView extends BaseView {
 		if (event.getAction() == MotionEvent.ACTION_DOWN && event.getPointerCount() == 1) {
 			float x = event.getX();
 			float y = event.getY();
-
 			if (isWrite) {
 				if (x >= restartButtonImgX && x <= restartButtonImgX + restartButtonImg.getWidth()
 						&& y >= restartButtonImgY && y <= restartButtonImgY + restartButtonImg.getHeight()) {
@@ -532,7 +466,6 @@ public class MainView extends BaseView {
 					mainActivity.getHandler().sendEmptyMessage(Config.END_GAME);
 				}
 			}
-
 			if (!isStart) {
 				isStart = true;
 			}
@@ -543,7 +476,6 @@ public class MainView extends BaseView {
 					soundPlayer.playSound(1, 0);
 				}
 			}
-
 			if (isStart && !isHit && !isOver) {
 				if (x >= pauseButtonImgX && x <= pauseButtonImgX + pauseButtonImg.getWidth() && y >= pauseButtonImgY
 						&& y <= pauseButtonImgY + pauseButtonImg.getHeight() / 2) {

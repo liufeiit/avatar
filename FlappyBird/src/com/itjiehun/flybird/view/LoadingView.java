@@ -18,10 +18,6 @@ public class LoadingView extends BaseView {
 	private Bitmap bgImg;
 	private Bitmap logoImg;
 	private Bitmap textImg;
-
-	// private float bgImgX;//Í¼Æ¬×ø±ê
-	// private float bgImgY;
-
 	private float logoImgX;
 	private float logoImgY;
 
@@ -87,7 +83,7 @@ public class LoadingView extends BaseView {
 			try {
 				Thread.sleep(Config.LOADING_GAME_INTERVAL);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				// ignore
 			}
 			this.threadFlag = false;
 		}

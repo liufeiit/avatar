@@ -33,5 +33,4 @@ public class SoundPlayer {
 	public void playSound(int sound, int loop) {
 		soundPool.play(sound, 1, 1, 1, loop, 1.0f);
 	}
-
 }

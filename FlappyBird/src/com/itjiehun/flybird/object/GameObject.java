@@ -84,5 +84,4 @@ public abstract class GameObject {
 	public float getObjHeight() {
 		return this.obj_height;
 	}
-
 }

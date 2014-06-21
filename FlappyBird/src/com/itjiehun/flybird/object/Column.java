@@ -77,5 +77,4 @@ public class Column extends GameObject {
 				(int) (obj_mid_x + obj_width / 2), (int) Constants.SCREEN_HEIGHT);
 		return this.rectBottom;
 	}
-
 }

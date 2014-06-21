@@ -1,5 +1,8 @@
 package com.itjiehun.flybird.util;
 
+import com.itjiehun.flybird.BirdApplication;
+import com.umeng.analytics.MobclickAgent;
+
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -32,7 +35,7 @@ public class DeviceUtil {
 
 			return json.toString();
 		} catch (Exception e) {
-			e.printStackTrace();
+			MobclickAgent.reportError(BirdApplication.getApplication(), e);
 		}
 		return null;
 	}
