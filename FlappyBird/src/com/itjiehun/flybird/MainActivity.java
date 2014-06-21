@@ -5,13 +5,22 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import cn.waps.AppConnect;
 
 import com.itjiehun.flybird.config.Config;
+import com.itjiehun.flybird.umeng.UmengStatic;
 import com.itjiehun.flybird.util.SoundPlayer;
 import com.itjiehun.flybird.view.LoadingView;
 import com.itjiehun.flybird.view.MainView;
+import com.itjiehun.flybird.waps.WapsStatic;
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.update.UmengUpdateAgent;
 
 @SuppressLint("HandlerLeak")
 public class MainActivity extends Activity {
@@ -41,6 +50,29 @@ public class MainActivity extends Activity {
 		this.soundPlayer.initSounds();
 		this.loadingView = new LoadingView(this, soundPlayer);
 		this.setContentView(loadingView);
+		
+		AppConnect.getInstance(this);
+		AppConnect.getInstance(WapsStatic.APP_ID, WapsStatic.APP_PID, this);
+		
+		MobclickAgent.onResume(this, UmengStatic.UMENG_APPKEY, UmengStatic.UMENG_CHANNEL);
+
+		UmengUpdateAgent.setAppkey(UmengStatic.UMENG_APPKEY);
+		UmengUpdateAgent.setChannel(UmengStatic.UMENG_CHANNEL);
+		UmengUpdateAgent.update(this);
+		MobclickAgent.updateOnlineConfig(this);
+		UmengUpdateAgent.setUpdateCheckConfig(true);
+		UmengUpdateAgent.setUpdateAutoPopup(true);
+		
+		String ads = MobclickAgent.getConfigParams(this, UmengStatic.AdsKey.def);
+		if ("1".equals(ads) || "on".equalsIgnoreCase(ads) || "true".equalsIgnoreCase(ads)) {
+			LinearLayout adlayout = new LinearLayout(this);
+			adlayout.setGravity(Gravity.BOTTOM);
+			RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+					ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+			AppConnect.getInstance(this).showBannerAd(this, adlayout);
+			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+			addContentView(adlayout, layoutParams);
+		}
 	}
 
 	public void toMainView() {
@@ -66,5 +98,18 @@ public class MainActivity extends Activity {
 
 	public Handler getHandler() {
 		return this.handler;
+	}
+
+	public void onResume() {
+		super.onResume();
+		MobclickAgent.onPageStart("MainScreen");
+		MobclickAgent.onResume(this);
+	}
+
+	public void onPause() {
+		super.onPause();
+		MobclickAgent.onPageEnd("MainScreen");
+		MobclickAgent.onPause(this);
+		AppConnect.getInstance(this).close();
 	}
 }
