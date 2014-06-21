@@ -100,6 +100,7 @@ public class MainView extends BaseView {
 		column3 = new Column(getResources(), Config.COLUMN_X_GAP + column2.getObjMidX(), ground.getObjHeight());
 		bird = new Bird(getResources(), ground.getObjHeight());
 		this.thread = new Thread(this);
+		
 	}
 
 	@Override

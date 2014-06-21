@@ -62,7 +62,6 @@ public class MainActivity extends Activity {
 		MobclickAgent.updateOnlineConfig(this);
 		UmengUpdateAgent.setUpdateCheckConfig(true);
 		UmengUpdateAgent.setUpdateAutoPopup(true);
-		
 	}
 
 	public void toMainView() {

@@ -23,6 +23,7 @@
 
     <application
         android:name="com.itjiehun.flybird.BirdApplication"
+        android:hardwareAccelerated="true"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
