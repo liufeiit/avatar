@@ -52,7 +52,7 @@ public class BaiduMapUtil {
 		baiduMap.addOverlay(option);
 		// 旋转角范围： -180 ~ 180 , 单位：度 逆时针旋转
 		// zoom - 缩放级别 [3.0, 19.0]
-		MapStatus ms = new MapStatus.Builder(baiduMap.getMapStatus()).rotate(90).target(point).zoom(19).build();
+		MapStatus ms = new MapStatus.Builder(baiduMap.getMapStatus()).rotate(90).target(point).zoom(15).build();
 		
 		// accuracy - 精度信息，单位：米
 		/*MyLocationData locData = new MyLocationData.Builder().accuracy(location.getRadius())

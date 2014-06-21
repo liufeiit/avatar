@@ -1,20 +1,26 @@
 package com.itjiehun.nova;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.ZoomButton;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDNotifyListener;
@@ -39,6 +45,7 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.model.LatLng;
 
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivity extends Activity {
 	private MapView mapView = null;
 	private LocationClient locationClient = null;
@@ -48,6 +55,8 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+				WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
 		SDKInitializer.initialize(getApplicationContext());
 		// 俯角范围： -45 ~ 0 , 单位： 度
 		MapStatus ms = new MapStatus.Builder().overlook(0).target(new LatLng(31, 121)).zoom(3).build();
@@ -60,33 +69,47 @@ public class MainActivity extends Activity {
 		mapView.getMap().setMapStatus(msu);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(mapView);
-		
-		
-		
-		
-		LinearLayout bottomBar = new LinearLayout(this);
-//		RelativeLayout bottomBar = new RelativeLayout(this);
-		bottomBar.setGravity(Gravity.RIGHT);
-//		bottomBar.setOrientation(LinearLayout.VERTICAL);
-//		bottomBar.setGravity(Gravity.BOTTOM);
-//		bottomBar.setGravity(Gravity.TOP);
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-		Button child1 = new Button(this);
-		child1.setText("导航");
-		Button child2 = new Button(this);
-		child2.setText("附近");
-		bottomBar.addView(child1, 0, new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-		bottomBar.addView(child2, 1, new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-		
-		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-		addContentView(bottomBar, layoutParams);
-		
-		
-		
-		
+
+		RelativeLayout actionBar = new RelativeLayout(this);
+		actionBar.setGravity(Gravity.RIGHT);
+		RelativeLayout.LayoutParams barLayout = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT);
+		RelativeLayout.LayoutParams naviLayout = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT);
+		RelativeLayout.LayoutParams nearLayout = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT);
+		ZoomButton navi = new ZoomButton(this);
+		navi.setImageResource(R.drawable.navi48_48);
+		navi.setMinimumHeight(48);
+		navi.setMinimumWidth(48);
+		navi.setMaxWidth(48);
+		navi.setMaxHeight(48);
+		navi.setScaleType(ScaleType.CENTER_INSIDE);
+		// 0~255透明度值
+		navi.setAlpha(150F);
+		navi.setImageAlpha(100);
+		navi.setId(1);
+
+		ZoomButton near = new ZoomButton(this);
+		near.setImageResource(R.drawable.near48_48);
+		near.setMinimumHeight(48);
+		near.setMinimumWidth(48);
+		near.setMaxWidth(48);
+		near.setMaxHeight(48);
+		near.setScaleType(ScaleType.CENTER_INSIDE);
+		near.setAlpha(150F);
+		near.setImageAlpha(100);
+		near.setId(2);
+
+		naviLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+		actionBar.addView(navi, 0, naviLayout);
+		nearLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+		nearLayout.addRule(RelativeLayout.BELOW, navi.getId());
+		actionBar.addView(near, 1, nearLayout);
+		barLayout.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+		barLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+		addContentView(actionBar, barLayout);
+
 		mapView.getMap().setOnMapClickListener(new OnMapClickListener() {
 			@Override
 			public boolean onMapPoiClick(MapPoi mapPoi) {
@@ -125,29 +148,34 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onMapStatusChangeStart(MapStatus mapStatus) {
-				/*Toast.makeText(
-						MainActivity.this,
-						"onMapStatusChangeStart : (" + mapStatus.overlook + ", " + mapStatus.rotate + ", "
-								+ mapStatus.target + ", " + mapStatus.targetScreen + ", " + mapStatus.zoom + ")",
-						Toast.LENGTH_LONG).show();*/
+				/*
+				 * Toast.makeText( MainActivity.this,
+				 * "onMapStatusChangeStart : (" + mapStatus.overlook + ", " +
+				 * mapStatus.rotate + ", " + mapStatus.target + ", " +
+				 * mapStatus.targetScreen + ", " + mapStatus.zoom + ")",
+				 * Toast.LENGTH_LONG).show();
+				 */
 			}
 
 			@Override
 			public void onMapStatusChangeFinish(MapStatus mapStatus) {
-				/*Toast.makeText(
-						MainActivity.this,
-						"onMapStatusChangeFinish : (" + mapStatus.overlook + ", " + mapStatus.rotate + ", "
-								+ mapStatus.target + ", " + mapStatus.targetScreen + ", " + mapStatus.zoom + ")",
-						Toast.LENGTH_LONG).show();*/
+				/*
+				 * Toast.makeText( MainActivity.this,
+				 * "onMapStatusChangeFinish : (" + mapStatus.overlook + ", " +
+				 * mapStatus.rotate + ", " + mapStatus.target + ", " +
+				 * mapStatus.targetScreen + ", " + mapStatus.zoom + ")",
+				 * Toast.LENGTH_LONG).show();
+				 */
 			}
 
 			@Override
 			public void onMapStatusChange(MapStatus mapStatus) {
-				/*Toast.makeText(
-						MainActivity.this,
-						"onMapStatusChange : (" + mapStatus.overlook + ", " + mapStatus.rotate + ", "
-								+ mapStatus.target + ", " + mapStatus.targetScreen + ", " + mapStatus.zoom + ")",
-						Toast.LENGTH_LONG).show();*/
+				/*
+				 * Toast.makeText( MainActivity.this, "onMapStatusChange : (" +
+				 * mapStatus.overlook + ", " + mapStatus.rotate + ", " +
+				 * mapStatus.target + ", " + mapStatus.targetScreen + ", " +
+				 * mapStatus.zoom + ")", Toast.LENGTH_LONG).show();
+				 */
 			}
 		});
 		mapView.getMap().setOnMarkerClickListener(new OnMarkerClickListener() {
@@ -163,9 +191,7 @@ public class MainActivity extends Activity {
 		mapView.getMap().setOnMyLocationClickListener(new OnMyLocationClickListener() {
 			@Override
 			public boolean onMyLocationClick() {
-				Toast.makeText(
-						MainActivity.this,
-						"onMyLocationClick", Toast.LENGTH_LONG).show();
+				Toast.makeText(MainActivity.this, "onMyLocationClick", Toast.LENGTH_LONG).show();
 				return true;
 			}
 		});
@@ -187,26 +213,26 @@ public class MainActivity extends Activity {
 
 		if (locationClient.isStarted()) {
 			// locationClient.requestLocation();
-			 locationClient.requestOfflineLocation();
+			locationClient.requestOfflineLocation();
 
 			notifyLister = new NotifyLister();
 			// 4个参数代表要位置提醒的点的坐标，具体含义依次为：纬度，经度，距离范围，坐标系类型(gcj02,gps,bd09,bd09ll)
 			notifyLister.SetNotifyLocation(31d, 121d, 3000, "gps");
 			locationClient.registerNotify(notifyLister);
 
-//			locationClient.requestNotifyLocation();
+			// locationClient.requestNotifyLocation();
 
 		} else {
 			locationClient.start();
 
-			 locationClient.requestOfflineLocation();
+			locationClient.requestOfflineLocation();
 
 			notifyLister = new NotifyLister();
 			// 4个参数代表要位置提醒的点的坐标，具体含义依次为：纬度，经度，距离范围，坐标系类型(gcj02,gps,bd09,bd09ll)
 			notifyLister.SetNotifyLocation(31d, 121d, 30000000, "gps");
 			locationClient.registerNotify(notifyLister);
 
-//			locationClient.requestNotifyLocation();
+			// locationClient.requestNotifyLocation();
 		}
 
 		IntentFilter filter = new IntentFilter();
