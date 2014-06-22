@@ -3,6 +3,7 @@ package com.itjiehun.nova;
 import java.util.Arrays;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -87,6 +88,7 @@ public class MainActivity extends Activity {
 		setContentView(mapView);
 
 		RelativeLayout actionBar = new RelativeLayout(this);
+		actionBar.setPadding(0, 40, 20, 50);
 		actionBar.setGravity(Gravity.RIGHT);
 		RelativeLayout.LayoutParams barLayout = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
 				ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -95,26 +97,11 @@ public class MainActivity extends Activity {
 		RelativeLayout.LayoutParams nearLayout = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
 				ViewGroup.LayoutParams.WRAP_CONTENT);
 		ImageButton navi = new ImageButton(this);
-		navi.setImageResource(R.drawable.navi48_48);
-		navi.setMinimumHeight(48);
-		navi.setMinimumWidth(48);
-		navi.setMaxWidth(48);
-		navi.setMaxHeight(48);
-		navi.setScaleType(ScaleType.CENTER_INSIDE);
-		// 0~255透明度值
-		// navi.setAlpha(150F);
-		// navi.setImageAlpha(100);
+		navi.setBackgroundResource(R.drawable.navi48);
 		navi.setId(1);
 
 		ImageButton near = new ImageButton(this);
-		near.setImageResource(R.drawable.near48_48);
-		near.setMinimumHeight(48);
-		near.setMinimumWidth(48);
-		near.setMaxWidth(48);
-		near.setMaxHeight(48);
-		near.setScaleType(ScaleType.CENTER_INSIDE);
-		// near.setAlpha(150F);
-		// near.setImageAlpha(100);
+		near.setBackgroundResource(R.drawable.near48);
 		near.setId(2);
 
 		naviLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
@@ -219,7 +206,7 @@ public class MainActivity extends Activity {
 			}
 		}
 
-		DialogUtil.common(MainActivity.this, sb.toString(), "传感器信息");
+//		DialogUtil.common(MainActivity.this, sb.toString(), "传感器信息");
 	}
 
 	SensorManager sensorManager = null;
