@@ -48,18 +48,12 @@ public class Cube {
 		vertexBuffer = vbb.asIntBuffer();
 		vertexBuffer.put(vertex);
 		vertexBuffer.position(0);
-
-//		vertexBuffer = IntBuffer.allocate(vertex.length);
-//		vertexBuffer = IntBuffer.wrap(vertex);
 		
 		ByteBuffer cbb = ByteBuffer.allocateDirect(colors.length * 4);
 		cbb.order(ByteOrder.nativeOrder());
 		colorBuffer = cbb.asIntBuffer();
 		colorBuffer.put(colors);
 		colorBuffer.position(0);
-		
-//		colorBuffer = IntBuffer.allocate(colors.length);
-//		colorBuffer = IntBuffer.wrap(colors);
 		
 		indexBuffer = ByteBuffer.allocateDirect(index.length);
 		indexBuffer.put(index);
