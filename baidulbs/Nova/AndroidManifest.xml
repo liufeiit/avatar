@@ -5,6 +5,8 @@
     android:versionName="1.0.0" >
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="19" />
+    
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
@@ -149,6 +151,12 @@
 
         <activity
             android:name="com.itjiehun.nova.cube.OpenGL"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/geo_coder">
+        </activity>
+
+        <activity
+            android:name="com.itjiehun.nova.SoundRecording"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/geo_coder">
         </activity>

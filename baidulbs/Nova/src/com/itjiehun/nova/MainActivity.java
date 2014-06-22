@@ -1,26 +1,32 @@
 package com.itjiehun.nova;
 
-import android.annotation.TargetApi;
+import java.util.Arrays;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.hardware.Sensor;
+import android.hardware.SensorListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView.ScaleType;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-import android.widget.ZoomButton;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDNotifyListener;
@@ -29,44 +35,54 @@ import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BaiduMap.OnMapClickListener;
-import com.baidu.mapapi.map.BaiduMap.OnMapDoubleClickListener;
-import com.baidu.mapapi.map.BaiduMap.OnMapLoadedCallback;
-import com.baidu.mapapi.map.BaiduMap.OnMapLongClickListener;
-import com.baidu.mapapi.map.BaiduMap.OnMapStatusChangeListener;
-import com.baidu.mapapi.map.BaiduMap.OnMarkerClickListener;
-import com.baidu.mapapi.map.BaiduMap.OnMyLocationClickListener;
 import com.baidu.mapapi.map.BaiduMapOptions;
-import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.model.LatLng;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivity extends Activity {
+	private static final String TAG = MainActivity.class.getName();
 	private MapView mapView = null;
 	private LocationClient locationClient = null;
 	private BaiduMapSDKReceiver baiduMapSDKReceiver;
 	private NotifyLister notifyLister;
+	private BaiduMapEventListener baiduMapEventListener;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-				WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		if (Build.VERSION.SDK_INT >= 11) {
+			getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+					WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+		}
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		boolean isOrientationEnabled = false;
+		try {
+			isOrientationEnabled = Settings.System.getInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION) == 1;
+		} catch (SettingNotFoundException e) {
+			Log.e(TAG, "System Setting Error.", e);
+		}
+		int screenLayout = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
+		if ((screenLayout == Configuration.SCREENLAYOUT_SIZE_LARGE || screenLayout == Configuration.SCREENLAYOUT_SIZE_XLARGE)
+				&& isOrientationEnabled) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+		}
 		SDKInitializer.initialize(getApplicationContext());
 		// 俯角范围： -45 ~ 0 , 单位： 度
 		MapStatus ms = new MapStatus.Builder().overlook(0).target(new LatLng(31, 121)).zoom(3).build();
-		BaiduMapOptions bo = new BaiduMapOptions().mapStatus(ms).overlookingGesturesEnabled(true)
-				.rotateGesturesEnabled(true).scaleControlEnabled(true).scrollGesturesEnabled(true)
-				.zoomGesturesEnabled(true).mapType(BaiduMap.MAP_TYPE_NORMAL).compassEnabled(true)
-				.zoomControlsEnabled(true);
+		BaiduMapOptions bo = new BaiduMapOptions().compassEnabled(true).mapStatus(ms).mapType(BaiduMap.MAP_TYPE_NORMAL)
+				.overlookingGesturesEnabled(true).rotateGesturesEnabled(true).scaleControlEnabled(true)
+				.scrollGesturesEnabled(true).zoomControlsEnabled(true).zoomGesturesEnabled(true);
 		mapView = new MapView(this, bo);
 		MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(3.0f);
 		mapView.getMap().setMapStatus(msu);
+		mapView.getMap().setBuildingsEnabled(true);
+		mapView.getMap().setMyLocationEnabled(true);
+		mapView.getMap().setTrafficEnabled(true);
+		baiduMapEventListener = new BaiduMapEventListener(this, mapView);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(mapView);
 
@@ -78,7 +94,7 @@ public class MainActivity extends Activity {
 				ViewGroup.LayoutParams.WRAP_CONTENT);
 		RelativeLayout.LayoutParams nearLayout = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
 				ViewGroup.LayoutParams.WRAP_CONTENT);
-		ZoomButton navi = new ZoomButton(this);
+		ImageButton navi = new ImageButton(this);
 		navi.setImageResource(R.drawable.navi48_48);
 		navi.setMinimumHeight(48);
 		navi.setMinimumWidth(48);
@@ -86,19 +102,19 @@ public class MainActivity extends Activity {
 		navi.setMaxHeight(48);
 		navi.setScaleType(ScaleType.CENTER_INSIDE);
 		// 0~255透明度值
-		navi.setAlpha(150F);
-		navi.setImageAlpha(100);
+		// navi.setAlpha(150F);
+		// navi.setImageAlpha(100);
 		navi.setId(1);
 
-		ZoomButton near = new ZoomButton(this);
+		ImageButton near = new ImageButton(this);
 		near.setImageResource(R.drawable.near48_48);
 		near.setMinimumHeight(48);
 		near.setMinimumWidth(48);
 		near.setMaxWidth(48);
 		near.setMaxHeight(48);
 		near.setScaleType(ScaleType.CENTER_INSIDE);
-		near.setAlpha(150F);
-		near.setImageAlpha(100);
+		// near.setAlpha(150F);
+		// near.setImageAlpha(100);
 		near.setId(2);
 
 		naviLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
@@ -110,94 +126,14 @@ public class MainActivity extends Activity {
 		barLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
 		addContentView(actionBar, barLayout);
 
-		mapView.getMap().setOnMapClickListener(new OnMapClickListener() {
-			@Override
-			public boolean onMapPoiClick(MapPoi mapPoi) {
-				return true;
-			}
+		mapView.getMap().setOnMapClickListener(baiduMapEventListener);
+		mapView.getMap().setOnMapDoubleClickListener(baiduMapEventListener);
+		mapView.getMap().setOnMapLoadedCallback(baiduMapEventListener);
+		mapView.getMap().setOnMapLongClickListener(baiduMapEventListener);
+		mapView.getMap().setOnMapStatusChangeListener(baiduMapEventListener);
+		mapView.getMap().setOnMarkerClickListener(baiduMapEventListener);
+		mapView.getMap().setOnMyLocationClickListener(baiduMapEventListener);
 
-			@Override
-			public void onMapClick(LatLng latLng) {
-				Toast.makeText(MainActivity.this, "Click : (" + latLng.latitude + ", " + latLng.longitude + ")",
-						Toast.LENGTH_LONG).show();
-			}
-		});
-		mapView.getMap().setOnMapDoubleClickListener(new OnMapDoubleClickListener() {
-
-			@Override
-			public void onMapDoubleClick(LatLng latLng) {
-				Toast.makeText(MainActivity.this, "DoubleClick : (" + latLng.latitude + ", " + latLng.longitude + ")",
-						Toast.LENGTH_LONG).show();
-			}
-		});
-		mapView.getMap().setOnMapLoadedCallback(new OnMapLoadedCallback() {
-			@Override
-			public void onMapLoaded() {
-				Toast.makeText(MainActivity.this, "地图加载完毕!", Toast.LENGTH_LONG).show();
-			}
-		});
-		mapView.getMap().setOnMapLongClickListener(new OnMapLongClickListener() {
-
-			@Override
-			public void onMapLongClick(LatLng latLng) {
-				Toast.makeText(MainActivity.this, "LongClick : (" + latLng.latitude + ", " + latLng.longitude + ")",
-						Toast.LENGTH_LONG).show();
-			}
-		});
-		mapView.getMap().setOnMapStatusChangeListener(new OnMapStatusChangeListener() {
-
-			@Override
-			public void onMapStatusChangeStart(MapStatus mapStatus) {
-				/*
-				 * Toast.makeText( MainActivity.this,
-				 * "onMapStatusChangeStart : (" + mapStatus.overlook + ", " +
-				 * mapStatus.rotate + ", " + mapStatus.target + ", " +
-				 * mapStatus.targetScreen + ", " + mapStatus.zoom + ")",
-				 * Toast.LENGTH_LONG).show();
-				 */
-			}
-
-			@Override
-			public void onMapStatusChangeFinish(MapStatus mapStatus) {
-				/*
-				 * Toast.makeText( MainActivity.this,
-				 * "onMapStatusChangeFinish : (" + mapStatus.overlook + ", " +
-				 * mapStatus.rotate + ", " + mapStatus.target + ", " +
-				 * mapStatus.targetScreen + ", " + mapStatus.zoom + ")",
-				 * Toast.LENGTH_LONG).show();
-				 */
-			}
-
-			@Override
-			public void onMapStatusChange(MapStatus mapStatus) {
-				/*
-				 * Toast.makeText( MainActivity.this, "onMapStatusChange : (" +
-				 * mapStatus.overlook + ", " + mapStatus.rotate + ", " +
-				 * mapStatus.target + ", " + mapStatus.targetScreen + ", " +
-				 * mapStatus.zoom + ")", Toast.LENGTH_LONG).show();
-				 */
-			}
-		});
-		mapView.getMap().setOnMarkerClickListener(new OnMarkerClickListener() {
-			@Override
-			public boolean onMarkerClick(Marker marker) {
-				Toast.makeText(
-						MainActivity.this,
-						"onMarkerClick : (" + marker.getPosition().latitude + ", " + marker.getPosition().latitude
-								+ ")", Toast.LENGTH_LONG).show();
-				return true;
-			}
-		});
-		mapView.getMap().setOnMyLocationClickListener(new OnMyLocationClickListener() {
-			@Override
-			public boolean onMyLocationClick() {
-				Toast.makeText(MainActivity.this, "onMyLocationClick", Toast.LENGTH_LONG).show();
-				return true;
-			}
-		});
-		mapView.getMap().setBuildingsEnabled(true);
-		mapView.getMap().setMyLocationEnabled(true);
-		mapView.getMap().setTrafficEnabled(true);
 		locationClient = new LocationClient(getApplicationContext());
 		LocationListener listener = new LocationListener(mapView, this);
 		locationClient.registerLocationListener(listener); // 注册监听函数
@@ -240,11 +176,90 @@ public class MainActivity extends Activity {
 		filter.addAction(SDKInitializer.SDK_BROADTCAST_INTENT_EXTRA_INFO_KEY_ERROR_CODE);
 		baiduMapSDKReceiver = new BaiduMapSDKReceiver();
 		registerReceiver(baiduMapSDKReceiver, filter);
+
+		sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		// sensorManager.getOrientation(R, values);
+		// sensorManager.registerListener(sensor, Sensor.TYPE_ALL,
+		// SensorManager.SENSOR_DELAY_UI);
+
+		List<Sensor> allSensors = sensorManager.getSensorList(Sensor.TYPE_ALL);
+		StringBuffer sb = new StringBuffer("经检测该手机有").append(allSensors.size()).append("个传感器，他们分别是：\n");
+		// 显示每个传感器的具体信息
+		for (Sensor s : allSensors) {
+			String tempString = "\n" + "  设备名称：" + s.getName() + "\n" + "  设备版本：" + s.getVersion() + "\n" + "  供应商："
+					+ s.getVendor() + "\n";
+			switch (s.getType()) {
+			case Sensor.TYPE_ACCELEROMETER:
+				sb.append(s.getType()).append(" 加速度传感器accelerometer").append(tempString);
+				break;
+			case Sensor.TYPE_GYROSCOPE:
+				sb.append(s.getType()).append(" 陀螺仪传感器gyroscope").append(tempString);
+				break;
+			case Sensor.TYPE_LIGHT:
+				sb.append(s.getType()).append(" 环境光线传感器light").append(tempString);
+				break;
+			case Sensor.TYPE_MAGNETIC_FIELD:
+				sb.append(s.getType()).append(" 电磁场传感器magnetic field").append(tempString);
+				break;
+			case Sensor.TYPE_ORIENTATION:
+				sb.append(s.getType()).append(" 方向传感器orientation").append(tempString);
+				break;
+			case Sensor.TYPE_PRESSURE:
+				sb.append(s.getType()).append(" 压力传感器pressure").append(tempString);
+				break;
+			case Sensor.TYPE_PROXIMITY:
+				sb.append(s.getType()).append(" 距离传感器proximity").append(tempString);
+				break;
+			case Sensor.TYPE_AMBIENT_TEMPERATURE:
+				sb.append(s.getType()).append(" 温度传感器temperature").append(tempString);
+				break;
+			default:
+				sb.append(s.getType()).append(" 未知传感器").append(tempString);
+				break;
+			}
+		}
+
+		DialogUtil.common(MainActivity.this, sb.toString(), "传感器信息");
+	}
+
+	SensorManager sensorManager = null;
+	NovaSensor sensor = new NovaSensor();
+
+	public class NovaSensor implements SensorListener {
+
+		@Override
+		public void onAccuracyChanged(int sensor, int accuracy) {
+			DialogUtil.common(MainActivity.this, "传感器精度变化 : " + accuracy, "信息");
+		}
+
+		@Override
+		public void onSensorChanged(int sensor, float[] values) {
+			switch (sensor) {
+			case SensorManager.SENSOR_ACCELEROMETER:
+				DialogUtil.common(MainActivity.this, "加速度传感器精度：" + Arrays.toString(values), "信息");
+				break;
+			case SensorManager.SENSOR_ORIENTATION:
+				DialogUtil.common(MainActivity.this, "姿势传感器精度：" + Arrays.toString(values), "信息");
+				break;
+			case SensorManager.SENSOR_MAGNETIC_FIELD:
+				DialogUtil.common(MainActivity.this, "磁场传感器精度：" + Arrays.toString(values), "信息");
+				break;
+			case SensorManager.SENSOR_LIGHT:
+				DialogUtil.common(MainActivity.this, "光传感器精度：" + Arrays.toString(values), "信息");
+				break;
+			case SensorManager.SENSOR_PROXIMITY:
+				DialogUtil.common(MainActivity.this, "距离传感器精度：" + Arrays.toString(values), "信息");
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 	public class NotifyLister extends BDNotifyListener {
 		public void onNotify(BDLocation location, float distance) {
-//			TipHelper.vibrate(MainActivity.this, 2000);
+			// TipHelper.vibrate(MainActivity.this, 2000);
+			Toast.makeText(MainActivity.this, "距离 ：" + distance, Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -275,6 +290,8 @@ public class MainActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		mapView.onPause();
+		sensorManager.unregisterListener(sensor, SensorManager.SENSOR_ALL);
+
 	}
 
 	@Override
