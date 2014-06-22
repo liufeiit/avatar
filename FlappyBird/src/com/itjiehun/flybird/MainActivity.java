@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
 		}
 		this.setContentView(this.mainView);
 		this.loadingView = null;
-		String ads = MobclickAgent.getConfigParams(this, UmengStatic.AdsKey.def);
+		String ads = MobclickAgent.getConfigParams(this, UmengStatic.AdsKey.mumayi);
 		if ("1".equals(ads) || "on".equalsIgnoreCase(ads) || "true".equalsIgnoreCase(ads)) {
 			try {
 				LinearLayout adlayout = new LinearLayout(this);
